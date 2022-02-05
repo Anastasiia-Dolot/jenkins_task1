@@ -2,7 +2,7 @@ pipeline {
     agent any
     stages {
         stage('Clone repository') {
-            git clone -b feature git@github.com:Anastasiia-Dolot/jenkins_task1.git
+            git clone -b feature https://github.com/Anastasiia-Dolot/jenkins_task1.git
         }
         stage('Dockerfile linting') {
             custom:
