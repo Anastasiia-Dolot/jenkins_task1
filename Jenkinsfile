@@ -4,18 +4,21 @@ pipeline {
         stage('Clone repository') {
             git clone -b feature https://github.com/Anastasiia-Dolot/jenkins_task1.git
         }
-        stage('Dockerfile linting') {
-            custom:
-                build-docker:
-                    - step:
-                        name: Dockerlint
-                        script:
-                            - docker run --rm -i -v ${PWD}/.hadolint.yml:/.hadolint.yaml 
-            hadolint/hadolint:v1.10.3  Dockerfile
-                - step: 
-                    name: Build image
-                    script:
-                        - docker build -t myimage .
+        stage ("lint dockerfile") {
+            agent {
+                docker {
+                    image 'hadolint/hadolint:latest-debian'
+                    //image 'ghcr.io/hadolint/hadolint:latest-debian'
+                    }
+            }
+            steps {
+                sh 'hadolint dockerfiles/* | tee -a hadolint_lint.txt'
+                }
+            post {
+                always {
+                    archiveArtifacts 'hadolint_lint.txt'
+                }
+            }
         }
     }
 }
