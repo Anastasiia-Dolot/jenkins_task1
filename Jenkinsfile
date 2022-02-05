@@ -8,7 +8,7 @@ pipeline {
         }
         stage ("Lint dockerfile") {
             steps {
-                sh 'ls -la'
+                bash 'ls -la'
             }
         }
     }
