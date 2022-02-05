@@ -7,16 +7,8 @@ pipeline {
             }
         }
         stage ("Lint dockerfile") {
-            agent {
-                docker { image 'hadolint/hadolint' }
-            }
             steps {
-                sh 'hadolint dockerfiles/* | tee -a hadolint_lint.txt'
-            }
-            post {
-                always {
-                    archiveArtifacts 'hadolint_lint.txt'
-                }
+                sh 'ls -la'
             }
         }
     }
