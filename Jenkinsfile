@@ -1,22 +1,12 @@
 pipeline {
     agent any
     stages {
-        stage ("Lint dockerfile") {
-            agent {
-                docker {
-                    image 'hadolint/hadolint:latest'
-                    args '-u root:root'
-                    }
-                }
-            steps {
-                git branch: 'feature', credentialsId: 'e042030d-ced1-4bcd-8a0c-e4d385a1e05c', url: 'https://github.com/Anastasiia-Dolot/jenkins_task1.git'
-                sh 'hadolint dockerfiles/* | tee -a hadolint_lint.txt'
-                }
-            post {
-                always {
-                    archiveArtifacts 'hadolint_lint.txt'
-                }
-            }
+        stage("Clone repo") {
+            git branch: 'feature', credentialsId: 'e042030d-ced1-4bcd-8a0c-e4d385a1e05c', url: 'https://github.com/Anastasiia-Dolot/jenkins_task1.git'
+        }
+        stage("Lint dockerfile") {
+            sh 'cd jenkins_task1'
+            sh 'docker run --rm -i hadolint/hadolint < Dockerfile'
         }
     }
 }
