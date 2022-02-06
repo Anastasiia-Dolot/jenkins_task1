@@ -8,7 +8,9 @@ pipeline {
         }
         stage ("Lint Dockerfile") {
             steps {
+                sh 'docker pull hadolint/hadolint'
                 sh 'ls -la'
+                sh 'docker run --rm -i hadolint/hadolint < Dockerfile'
                 }
         }
     }
