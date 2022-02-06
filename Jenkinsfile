@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('Clone repository') {
             steps {
-                git branch: 'feature', credentialsId: 'e042030d-ced1-4bcd-8a0c-e4d385a1e05c', url: 'git@github.com:Anastasiia-Dolot/jenkins_task1.git'
+                git branch: 'feature', credentialsId: '5028192c-d015-48e7-a7fa-96daf7c8976a', url: 'git@github.com:Anastasiia-Dolot/jenkins_task1.git'
             }
         }
         stage ("Lint Dockerfile") {
