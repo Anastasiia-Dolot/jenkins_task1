@@ -9,7 +9,7 @@ pipeline {
         stage ("Lint Dockerfile") {
             steps {
                 sh 'docker pull hadolint/hadolint'
-                sh 'docker run --rm -i hadolint/hadolint < Dockerfile'
+                sh 'docker run --rm -i hadolint/hadolint < Dockerfile > Lint_Dockerfile_${BUILD_NUMBER}.txt'
                 }
         }
     }
