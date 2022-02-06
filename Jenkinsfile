@@ -11,7 +11,6 @@ pipeline {
                 sh 'docker pull hadolint/hadolint:latest'
                 sh 'docker run --rm -i ghcr.io/hadolint/hadolint < Dockerfile | tee -a hadolint_lint.txt'
                 sh 'cat hadolint_lint.txt'
-                sh 'ls -la'
                 }
         }
     }
