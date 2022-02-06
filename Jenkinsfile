@@ -1,7 +1,7 @@
 pipeline {
     agent { label 'Ubuntu20' }
     stages {
-        stage('Clone repository') {
+        stage('Clone Repository') {
             steps {
                 git branch: 'feature', credentialsId: '5028192c-d015-48e7-a7fa-96daf7c8976a', url: 'git@github.com:Anastasiia-Dolot/jenkins_task1.git'
             }
