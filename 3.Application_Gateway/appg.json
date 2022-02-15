@@ -1,0 +1,257 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string"
+        },
+        "applicationGatewayName": {
+            "type": "string"
+        },
+        "tier": {
+            "type": "string"
+        },
+        "skuSize": {
+            "type": "string"
+        },
+        "capacity": {
+            "type": "int",
+            "defaultValue": 2
+        },
+        "subnetName": {
+            "type": "string"
+        },
+        "zones": {
+            "type": "array"
+        },
+        "publicIpAddressName": {
+            "type": "string"
+        },
+        "sku": {
+            "type": "string"
+        },
+        "allocationMethod": {
+            "type": "string"
+        },
+        "publicIpZones": {
+            "type": "array"
+        }
+    },
+    "variables": {
+        "vnetId": "/subscriptions/c023eb57-a395-4b35-a0e3-c447a6098af2/resourceGroups/TestResGroup/providers/Microsoft.Network/virtualNetworks/Netw1",
+        "publicIPRef": "[resourceId('Microsoft.Network/publicIPAddresses/', parameters('publicIpAddressName'))]",
+        "subnetRef": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]",
+        "applicationGatewayId": "[resourceId('Microsoft.Network/applicationGateways', parameters('applicationGatewayName'))]"
+    },
+    "resources": [
+        {
+            "name": "[parameters('applicationGatewayName')]",
+            "type": "Microsoft.Network/applicationGateways",
+            "apiVersion": "2019-09-01",
+            "location": "[parameters('location')]",
+            "zones": "[parameters('zones')]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/publicIPAddresses/', parameters('publicIpAddressName'))]"
+            ],
+            "tags": {},
+            "properties": {
+                "sku": {
+                    "name": "[parameters('skuSize')]",
+                    "tier": "[parameters('tier')]",
+                    "capacity": "[parameters('capacity')]"
+                },
+                "gatewayIPConfigurations": [
+                    {
+                        "name": "appGatewayIpConfig",
+                        "properties": {
+                            "subnet": {
+                                "id": "[variables('subnetRef')]"
+                            }
+                        }
+                    }
+                ],
+                "frontendIPConfigurations": [
+                    {
+                        "name": "appGwPublicFrontendIp",
+                        "properties": {
+                            "PublicIPAddress": {
+                                "id": "[variables('publicIPRef')]"
+                            }
+                        }
+                    }
+                ],
+                "frontendPorts": [
+                    {
+                        "name": "port_80",
+                        "properties": {
+                            "Port": 80
+                        }
+                    }
+                ],
+                "backendAddressPools": [
+                    {
+                        "name": "vmback",
+                        "properties": {
+                            "backendAddresses": []
+                        }
+                    }
+                ],
+                "backendHttpSettingsCollection": [
+                    {
+                        "name": "http01",
+                        "properties": {
+                            "Port": 80,
+                            "Protocol": "Http",
+                            "cookieBasedAffinity": "Disabled",
+                            "requestTimeout": 20
+                        }
+                    }
+                ],
+                "httpListeners": [
+                    {
+                        "name": "listener1",
+                        "properties": {
+                            "frontendIPConfiguration": {
+                                "id": "[concat(variables('applicationGatewayId'), '/frontendIPConfigurations/appGwPublicFrontendIp')]"
+                            },
+                            "frontendPort": {
+                                "id": "[concat(variables('applicationGatewayId'), '/frontendPorts/port_80')]"
+                            },
+                            "protocol": "Http",
+                            "sslCertificate": null
+                        }
+                    }
+                ],
+                "requestRoutingRules": [
+                    {
+                        "Name": "rule80",
+                        "properties": {
+                            "RuleType": "Basic",
+                            "httpListener": {
+                                "id": "[concat(variables('applicationGatewayId'), '/httpListeners/listener1')]"
+                            },
+                            "priority": null,
+                            "backendAddressPool": {
+                                "id": "[concat(variables('applicationGatewayId'), '/backendAddressPools/vmback')]"
+                            },
+                            "backendHttpSettings": {
+                                "id": "[concat(variables('applicationGatewayId'), '/backendHttpSettingsCollection/http01')]"
+                            }
+                        }
+                    }
+                ],
+                "enableHttp2": false,
+                "sslCertificates": [],
+                "probes": []
+            }
+        },
+        {
+            "apiVersion": "2020-08-01",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[parameters('publicIpAddressName')]",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "[parameters('sku')]"
+            },
+            "zones": "[parameters('publicIpZones')]",
+            "properties": {
+                "publicIPAllocationMethod": "[parameters('allocationMethod')]"
+            }
+        },
+        {
+            "name": "vm1602-20220213223512",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2017-05-10",
+            "dependsOn": [
+                "[concat('Microsoft.Network/applicationGateways/', parameters('applicationGatewayName'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {},
+                    "variables": {},
+                    "resources": [
+                        {
+                            "name": "vm1602",
+                            "id": "/subscriptions/c023eb57-a395-4b35-a0e3-c447a6098af2/resourceGroups/TestResGroup/providers/Microsoft.Network/networkInterfaces/vm1602",
+                            "location": "westeurope",
+                            "properties": {
+                                "provisioningState": "Succeeded",
+                                "resourceGuid": "2968174b-2462-4bbb-bc3d-5a7315014b8f",
+                                "ipConfigurations": [
+                                    {
+                                        "name": "ipconfig1",
+                                        "id": "/subscriptions/c023eb57-a395-4b35-a0e3-c447a6098af2/resourceGroups/TestResGroup/providers/Microsoft.Network/networkInterfaces/vm1602/ipConfigurations/ipconfig1",
+                                        "etag": "W/\"eba37735-1e2d-4a9f-bef5-f2032a508298\"",
+                                        "type": "Microsoft.Network/networkInterfaces/ipConfigurations",
+                                        "properties": {
+                                            "provisioningState": "Succeeded",
+                                            "privateIPAddress": "10.0.0.68",
+                                            "privateIPAllocationMethod": "Dynamic",
+                                            "publicIPAddress": {
+                                                "name": "VM1-ip",
+                                                "id": "/subscriptions/c023eb57-a395-4b35-a0e3-c447a6098af2/resourceGroups/TestResGroup/providers/Microsoft.Network/publicIPAddresses/VM1-ip",
+                                                "etag": "W/\"ebe0825d-e5ee-4564-8160-df133f400c6e\"",
+                                                "location": "westeurope",
+                                                "properties": {
+                                                    "provisioningState": "Succeeded",
+                                                    "resourceGuid": "27669123-8f3f-40a4-8dd8-cb321f145183",
+                                                    "ipAddress": "20.93.134.166",
+                                                    "publicIPAddressVersion": "IPv4",
+                                                    "publicIPAllocationMethod": "Dynamic",
+                                                    "idleTimeoutInMinutes": 4,
+                                                    "ipTags": [],
+                                                    "ipConfiguration": {
+                                                        "id": "/subscriptions/c023eb57-a395-4b35-a0e3-c447a6098af2/resourceGroups/TestResGroup/providers/Microsoft.Network/networkInterfaces/vm1602/ipConfigurations/ipconfig1"
+                                                    }
+                                                },
+                                                "type": "Microsoft.Network/publicIPAddresses",
+                                                "sku": {
+                                                    "name": "Basic"
+                                                }
+                                            },
+                                            "subnet": {
+                                                "id": "/subscriptions/c023eb57-a395-4b35-a0e3-c447a6098af2/resourceGroups/TestResGroup/providers/Microsoft.Network/virtualNetworks/Netw1/subnets/subnet2"
+                                            },
+                                            "primary": true,
+                                            "privateIPAddressVersion": "IPv4",
+                                            "applicationGatewayBackendAddressPools": [
+                                                {
+                                                    "id": "/subscriptions/c023eb57-a395-4b35-a0e3-c447a6098af2/resourceGroups/TestResGroup/providers/Microsoft.Network/applicationGateways/AppG/backendAddressPools/vmback"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ],
+                                "dnsSettings": {
+                                    "dnsServers": [],
+                                    "appliedDnsServers": [],
+                                    "internalDomainNameSuffix": "alzpwx20okie3fykvpu4yybl0c.ax.internal.cloudapp.net"
+                                },
+                                "macAddress": "00-0D-3A-27-85-C6",
+                                "enableAcceleratedNetworking": true,
+                                "enableIPForwarding": false,
+                                "networkSecurityGroup": {
+                                    "id": "/subscriptions/c023eb57-a395-4b35-a0e3-c447a6098af2/resourceGroups/TestResGroup/providers/Microsoft.Network/networkSecurityGroups/VM1nsg534"
+                                },
+                                "primary": true,
+                                "virtualMachine": {
+                                    "id": "/subscriptions/c023eb57-a395-4b35-a0e3-c447a6098af2/resourceGroups/TestResGroup/providers/Microsoft.Compute/virtualMachines/VM1"
+                                },
+                                "hostedWorkloads": [],
+                                "tapConfigurations": []
+                            },
+                            "type": "Microsoft.Network/networkInterfaces",
+                            "apiVersion": "2018-10-01",
+                            "dependsOn": []
+                        }
+                    ]
+                },
+                "parameters": {}
+            },
+            "resourceGroup": "TestResGroup"
+        }
+    ]
+}
