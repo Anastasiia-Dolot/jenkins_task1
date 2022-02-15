@@ -44,9 +44,6 @@
         "networkAclsVirtualNetworkRules": {
             "type": "array"
         },
-        "largeFileSharesState": {
-            "type": "string"
-        },
         "keySource": {
             "type": "string"
         },
@@ -82,6 +79,9 @@
         },
         "isShareSoftDeleteEnabled": {
             "type": "bool"
+        },
+        "shareSoftDeleteRetentionDays": {
+            "type": "int"
         }
     },
     "variables": {},
@@ -89,7 +89,7 @@
         {
             "apiVersion": "2018-05-01",
             "type": "Microsoft.Resources/deployments",
-            "name": "virtualNetworks_0.5831016073850592",
+            "name": "virtualNetworks_0.9039988930736202",
             "subscriptionId": "c023eb57-a395-4b35-a0e3-c447a6098af2",
             "resourceGroup": "TestResGroup",
             "dependsOn": [],
@@ -110,7 +110,7 @@
                             "location": "westeurope",
                             "properties": {
                                 "provisioningState": "Succeeded",
-                                "resourceGuid": "5ffbf202-729a-4e90-970a-abe9ec602bd2",
+                                "resourceGuid": "859ba6de-3536-4ae8-9cdc-ccf7a992c5ab",
                                 "addressSpace": {
                                     "addressPrefixes": [
                                         "10.0.0.0/16"
@@ -120,15 +120,10 @@
                                     {
                                         "name": "default",
                                         "id": "/subscriptions/c023eb57-a395-4b35-a0e3-c447a6098af2/resourceGroups/TestResGroup/providers/Microsoft.Network/virtualNetworks/Netw1/subnets/default",
-                                        "etag": "W/\"015b12f4-4e1f-44db-bb87-1a894570351e\"",
+                                        "etag": "W/\"3b88d9a7-21b5-42a2-8835-61945539fddd\"",
                                         "properties": {
                                             "provisioningState": "Succeeded",
                                             "addressPrefix": "10.0.1.0/26",
-                                            "applicationGatewayIPConfigurations": [
-                                                {
-                                                    "id": "/subscriptions/c023eb57-a395-4b35-a0e3-c447a6098af2/resourceGroups/TestResGroup/providers/Microsoft.Network/applicationGateways/AppG/gatewayIPConfigurations/appGatewayIpConfig"
-                                                }
-                                            ],
                                             "delegations": [],
                                             "privateEndpointNetworkPolicies": "Enabled",
                                             "privateLinkServiceNetworkPolicies": "Enabled"
@@ -138,7 +133,7 @@
                                     {
                                         "name": "subnet2",
                                         "id": "/subscriptions/c023eb57-a395-4b35-a0e3-c447a6098af2/resourceGroups/TestResGroup/providers/Microsoft.Network/virtualNetworks/Netw1/subnets/subnet2",
-                                        "etag": "W/\"015b12f4-4e1f-44db-bb87-1a894570351e\"",
+                                        "etag": "W/\"3b88d9a7-21b5-42a2-8835-61945539fddd\"",
                                         "properties": {
                                             "provisioningState": "Succeeded",
                                             "addressPrefix": "10.0.0.64/27",
@@ -188,7 +183,6 @@
                     "ipRules": [],
                     "virtualNetworkRules": "[parameters('networkAclsVirtualNetworkRules')]"
                 },
-                "largeFileSharesState": "[parameters('largeFileSharesState')]",
                 "encryption": {
                     "keySource": "[parameters('keySource')]",
                     "services": {
@@ -209,7 +203,7 @@
                 }
             },
             "dependsOn": [
-                "Microsoft.Resources/deployments/virtualNetworks_0.5831016073850592"
+                "Microsoft.Resources/deployments/virtualNetworks_0.9039988930736202"
             ],
             "sku": {
                 "name": "[parameters('accountType')]"
@@ -248,7 +242,8 @@
             "apiVersion": "2021-08-01",
             "properties": {
                 "shareDeleteRetentionPolicy": {
-                    "enabled": "[parameters('isShareSoftDeleteEnabled')]"
+                    "enabled": "[parameters('isShareSoftDeleteEnabled')]",
+                    "days": "[parameters('shareSoftDeleteRetentionDays')]"
                 }
             },
             "dependsOn": [

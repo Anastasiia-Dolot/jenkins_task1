@@ -6,10 +6,10 @@
             "value": "westeurope"
         },
         "storageAccountName": {
-            "value": "strgtest1e233"
+            "value": "accstorage186359h"
         },
         "accountType": {
-            "value": "Standard_LRS"
+            "value": "Standard_RAGRS"
         },
         "kind": {
             "value": "StorageV2"
@@ -21,10 +21,10 @@
             "value": "TLS1_2"
         },
         "supportsHttpsTrafficOnly": {
-            "value": false
+            "value": true
         },
         "allowBlobPublicAccess": {
-            "value": false
+            "value": true
         },
         "allowSharedKeyAccess": {
             "value": true
@@ -47,9 +47,6 @@
                     "id": "/subscriptions/c023eb57-a395-4b35-a0e3-c447a6098af2/resourceGroups/TestResGroup/providers/Microsoft.Network/virtualNetworks/Netw1/subnets/subnet2"
                 }
             ]
-        },
-        "largeFileSharesState": {
-            "value": "Enabled"
         },
         "keySource": {
             "value": "Microsoft.Storage"
@@ -85,7 +82,10 @@
             "value": false
         },
         "isShareSoftDeleteEnabled": {
-            "value": false
+            "value": true
+        },
+        "shareSoftDeleteRetentionDays": {
+            "value": 7
         }
     }
 }
