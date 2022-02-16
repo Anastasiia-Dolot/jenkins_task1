@@ -176,7 +176,7 @@
                         {
                             "name": "vm1602",
                             "id": "/subscriptions/c023eb57-a395-4b35-a0e3-c447a6098af2/resourceGroups/TestResGroup/providers/Microsoft.Network/networkInterfaces/vm1602",
-                            "location": "westeurope",
+                            "location": "eastus",
                             "properties": {
                                 "provisioningState": "Succeeded",
                                 "resourceGuid": "2968174b-2462-4bbb-bc3d-5a7315014b8f",
@@ -194,7 +194,7 @@
                                                 "name": "VM1-ip",
                                                 "id": "/subscriptions/c023eb57-a395-4b35-a0e3-c447a6098af2/resourceGroups/TestResGroup/providers/Microsoft.Network/publicIPAddresses/VM1-ip",
                                                 "etag": "W/\"ebe0825d-e5ee-4564-8160-df133f400c6e\"",
-                                                "location": "westeurope",
+                                                "location": "eastus",
                                                 "properties": {
                                                     "provisioningState": "Succeeded",
                                                     "resourceGuid": "27669123-8f3f-40a4-8dd8-cb321f145183",
