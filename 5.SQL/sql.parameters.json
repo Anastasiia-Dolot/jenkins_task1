@@ -3,7 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "serverName": {
-            "value": "sdfgvs"
+            "value": "dol-db"
         },
         "location": {
             "value": "eastus"
