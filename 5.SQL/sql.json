@@ -14,23 +14,36 @@
         "serverName": {
             "type": "string"
         },
-        "skuCapacity": {
-            "type": "int"
-        },
-        "skuFamily": {
+        "serverEdition": {
             "type": "string"
         },
-        "skuName": {
-            "type": "string"
+        "vCores": {
+            "type": "int",
+            "defaultValue": 4
         },
-        "skuSizeMB": {
+        "storageSizeGB": {
             "type": "int"
         },
-        "skuTier": {
+        "haEnabled": {
+            "type": "string",
+            "defaultValue": "Disabled"
+        },
+        "availabilityZone": {
+            "type": "string"
+        },
+        "standbyAvailabilityZone": {
             "type": "string"
         },
         "version": {
             "type": "string"
+        },
+        "tags": {
+            "type": "object",
+            "defaultValue": {}
+        },
+        "firewallRules": {
+            "type": "object",
+            "defaultValue": {}
         },
         "backupRetentionDays": {
             "type": "int"
@@ -38,52 +51,111 @@
         "geoRedundantBackup": {
             "type": "string"
         },
-        "previewFeature": {
+        "vmName": {
             "type": "string",
-            "defaultValue": ""
+            "defaultValue": "Standard_B1ms"
         },
-        "tags": {
+        "publicNetworkAccess": {
+            "type": "string",
+            "metadata": {
+                "description": "Value should be either Enabled or Disabled"
+            }
+        },
+        "storageIops": {
+            "type": "int"
+        },
+        "storageAutogrow": {
+            "type": "string",
+            "defaultValue": "Enabled"
+        },
+        "vnetData": {
             "type": "object",
-            "defaultValue": {}
-        },
-        "storageAutoGrow": {
-            "type": "string",
-            "defaultValue": "Disabled"
-        },
-        "infrastructureEncryption": {
-            "type": "string",
-            "defaultValue": "Disabled"
+            "metadata": {
+                "description": "Vnet data is an object which contains all parameters pertaining to vnet and subnet"
+            },
+            "defaultValue": {
+                "virtualNetworkName": "testVnet",
+                "subnetName": "testSubnet",
+                "virtualNetworkAddressPrefix": "10.0.0.0/16",
+                "virtualNetworkResourceGroupName": "[resourceGroup().name]",
+                "location": "eastus2",
+                "subscriptionId": "[subscription().subscriptionId]",
+                "subnetProperties": {},
+                "isNewVnet": false,
+                "subnetNeedsUpdate": false,
+                "Network": {}
+            }
         }
+    },
+    "variables": {
+        "api": "2021-05-01",
+        "firewallRules": "[parameters('firewallRules').rules]"
     },
     "resources": [
         {
-            "apiVersion": "2017-12-01-preview",
-            "kind": "",
+            "apiVersion": "[variables('api')]",
             "location": "[parameters('location')]",
             "name": "[parameters('serverName')]",
             "properties": {
                 "version": "[parameters('version')]",
                 "administratorLogin": "[parameters('administratorLogin')]",
                 "administratorLoginPassword": "[parameters('administratorLoginPassword')]",
-                "storageProfile": {
-                    "storageMB": "[parameters('skuSizeMB')]",
-                    "backupRetentionDays": "[parameters('backupRetentionDays')]",
-                    "geoRedundantBackup": "[parameters('geoRedundantBackup')]",
-                    "storageAutoGrow": "[parameters('storageAutoGrow')]"
+                "publicNetworkAccess": "[parameters('publicNetworkAccess')]",
+                "Network": "[if(empty(parameters('vnetData').Network), json('null'), parameters('vnetData').Network)]",
+                "Storage": {
+                    "StorageSizeGB": "[parameters('storageSizeGB')]",
+                    "Iops": "[parameters('storageIops')]",
+                    "Autogrow": "[parameters('storageAutogrow')]"
                 },
-                "previewFeature": "[parameters('previewFeature')]",
-                "infrastructureEncryption": "[parameters('infrastructureEncryption')]"
+                "Backup": {
+                    "backupRetentionDays": "[parameters('backupRetentionDays')]",
+                    "geoRedundantBackup": "[parameters('geoRedundantBackup')]"
+                },
+                "availabilityZone": "[parameters('availabilityZone')]",
+                "highAvailability": {
+                    "mode": "[parameters('haEnabled')]",
+                    "standbyAvailabilityZone": "[parameters('standbyAvailabilityZone')]"
+                }
             },
             "sku": {
-                "name": "[parameters('skuName')]",
-                "tier": "[parameters('skuTier')]",
-                "capacity": "[parameters('skuCapacity')]",
-                "size": "[parameters('skuSizeMB')]",
-                "family": "[parameters('skuFamily')]"
+                "name": "[parameters('vmName')]",
+                "tier": "[parameters('serverEdition')]",
+                "capacity": "[parameters('vCores')]"
             },
             "tags": "[parameters('tags')]",
-            "type": "Microsoft.DBforMySQL/servers"
+            "type": "Microsoft.DBforMySQL/flexibleServers"
+        },
+        {
+            "condition": "[greater(length(variables('firewallRules')), 0)]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-08-01",
+            "name": "[concat('firewallRules-', copyIndex())]",
+            "copy": {
+                "count": "[if(greater(length(variables('firewallRules')), 0), length(variables('firewallRules')), 1)]",
+                "mode": "Serial",
+                "name": "firewallRulesIterator"
+            },
+            "dependsOn": [
+                "[concat('Microsoft.DBforMySQL/flexibleServers/', parameters('serverName'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "http://schema.management.azure.com/schemas/2014-04-01-preview/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "resources": [
+                        {
+                            "type": "Microsoft.DBforMySQL/flexibleServers/firewallRules",
+                            "name": "[concat(parameters('serverName'),'/',variables('firewallRules')[copyIndex()].name)]",
+                            "apiVersion": "[variables('api')]",
+                            "properties": {
+                                "StartIpAddress": "[variables('firewallRules')[copyIndex()].startIPAddress]",
+                                "EndIpAddress": "[variables('firewallRules')[copyIndex()].endIPAddress]"
+                            }
+                        }
+                    ]
+                }
+            }
         }
-    ],
-    "variables": {}
+    ]
 }

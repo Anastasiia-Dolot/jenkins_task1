@@ -3,25 +3,39 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "serverName": {
-            "value": "dol-db"
+            "value": "db-test"
         },
         "location": {
             "value": "eastus"
         },
-        "skuName": {
-            "value": "GP_Gen5_4"
-        },
-        "skuTier": {
+        "serverEdition": {
             "value": "GeneralPurpose"
         },
-        "skuCapacity": {
-            "value": 4
+        "vCores": {
+            "value": 2
         },
-        "skuFamily": {
-            "value": "Gen5"
+        "storageSizeGB": {
+            "value": 64
         },
-        "skuSizeMB": {
-            "value": 102400
+        "haEnabled": {
+            "value": "Disabled"
+        },
+        "tags": {
+            "value": {}
+        },
+        "firewallRules": {
+            "value": {
+                "rules": [
+                    {
+                        "name": "subnet2",
+                        "startIPAddress": "10.0.0.64",
+                        "endIPAddress": "10.0.0.95"
+                    }
+                ]
+            }
+        },
+        "publicNetworkAccess": {
+            "value": "Enabled"
         },
         "backupRetentionDays": {
             "value": 7
@@ -29,14 +43,20 @@
         "geoRedundantBackup": {
             "value": "Disabled"
         },
-        "storageAutoGrow": {
+        "availabilityZone": {
+            "value": ""
+        },
+        "vmName": {
+            "value": "Standard_D2ds_v4"
+        },
+        "storageIops": {
+            "value": 1000
+        },
+        "storageAutogrow": {
             "value": "Enabled"
         },
-        "tags": {
-            "value": {}
-        },
-        "infrastructureEncryption": {
-            "value": "Disabled"
+        "standbyAvailabilityZone": {
+            "value": ""
         },
         "administratorLogin": {
             "value": "admin1"
@@ -44,11 +64,8 @@
         "administratorLoginPassword": {
             "value": "Tg45Sc!d1"
         },
-        "previewFeature": {
-            "value": ""
-        },
         "version": {
-            "value": "8.0"
+            "value": "8.0.21"
         }
     }
 }
