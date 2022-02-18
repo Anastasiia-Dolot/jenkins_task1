@@ -85,7 +85,8 @@
         "nsgId": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroupName'))]",
         "vnetId": "[parameters('virtualNetworkId')]",
         "vnetName": "[last(split(variables('vnetId'), '/'))]",
-        "subnetRef": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]"
+        "subnetRef": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]",
+        "vmName": "VM1"
     },
     "resources": [
         {
@@ -222,6 +223,25 @@
                     "notificationLocale": "[parameters('autoShutdownNotificationLocale')]",
                     "timeInMinutes": "30",
                     "emailRecipient": "[parameters('autoShutdownNotificationEmail')]"
+                }
+            }
+        },
+		{
+            "name": "[concat(variables('vmName'),'/InstallApache2')]",
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "location": "[parameters('location')]",
+            "apiVersion": "2015-06-15",
+            "properties": {
+                "publisher": "Microsoft.Azure.Extensions",
+                "type": "CustomScript",
+                "typeHandlerVersion": "2.0",
+                "autoUpgradeMinorVersion": true,
+                "settings": {},
+                "protectedSettings": {
+                    "commandToExecute": "sh ./commands.sh",
+                    "fileUris": [
+                        "https://raw.githubusercontent.com/Anastasiia-Dolot/test/main/commands.sh"
+                    ]
                 }
             }
         }
